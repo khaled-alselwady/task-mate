@@ -5,7 +5,11 @@
     @for (user of users; track user.id) {
     <li>
       <!-- when I say {(select)="onSelectUser($event)"} that subscribes to the event, this means when I invoke the event, onSelectUser method will be called -->
-      <app-user [user]="user" (select)="onSelectUser($event)" />
+      <app-user
+        [user]="user"
+        [selected]="user.id === selectedUserId"
+        (select)="onSelectUser($event)"
+      />
     </li>
     }
   </ul>

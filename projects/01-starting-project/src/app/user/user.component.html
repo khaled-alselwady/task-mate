@@ -1,5 +1,5 @@
 <div>
-  <button (click)="onSelectUser()">
+  <button [class.active]="selected" (click)="onSelectUser()">
     <!-- property binding -->
     <img [attr.src]="imagePath" [attr.alt]="user.name" />
     <!-- string interpolation -->
