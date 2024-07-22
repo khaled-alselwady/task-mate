@@ -1,0 +1,12 @@
+<article>
+  @if (task) {
+  <h2>{{ task.title }}</h2>
+  <time>{{ task.dueDate }}</time>
+  <p>{{ task.summary }}</p>
+  } @else {
+  <h2>There are no tasks to show!</h2>
+  }
+  <p class="actions">
+    <button>Complete</button>
+  </p>
+</article>
