@@ -2,40 +2,17 @@
 
 <main>
   <ul id="users">
+    @for (user of users; track user.id) {
     <li>
-      <app-user
-        [id]="users[0].id"
-        [avatar]="users[0].avatar"
-        [name]="users[0].name"
-        (select)="onSelectUser($event)"
-      />
       <!-- when I say {(select)="onSelectUser($event)"} that subscribes to the event, this means when I invoke the event, onSelectUser method will be called -->
+      <app-user [user]="user" (select)="onSelectUser($event)" />
     </li>
-    <li>
-      <app-user
-        [id]="users[1].id"
-        [avatar]="users[1].avatar"
-        [name]="users[1].name"
-        (select)="onSelectUser($event)"
-      />
-    </li>
-    <li>
-      <app-user
-        [id]="users[2].id"
-        [avatar]="users[2].avatar"
-        [name]="users[2].name"
-        (select)="onSelectUser($event)"
-      />
-    </li>
-    <li>
-      <app-user
-        [id]="users[3].id"
-        [avatar]="users[3].avatar"
-        [name]="users[3].name"
-        (select)="onSelectUser($event)"
-      />
-    </li>
+    }
   </ul>
 
-  Tasks of that users
+  @if (selectedUser) {
+  <app-tasks [name]="selectedUser.name" />
+  } @else {
+  <p class="fallback">Select a user to see their tasks!</p>
+  }
 </main>
