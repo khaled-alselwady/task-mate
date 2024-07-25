@@ -2276,6 +2276,9 @@ function isScheduler(value) {
 function last(arr) {
   return arr[arr.length - 1];
 }
+function popResultSelector(args) {
+  return isFunction(last(args)) ? args.pop() : void 0;
+}
 function popScheduler(args) {
   return isScheduler(last(args)) ? args.pop() : void 0;
 }
@@ -2814,10 +2817,54 @@ function map(project, thisArg) {
 
 // node_modules/rxjs/dist/esm5/internal/util/mapOneOrManyArgs.js
 var isArray = Array.isArray;
+function callOrApply(fn, args) {
+  return isArray(args) ? fn.apply(void 0, __spreadArray([], __read(args))) : fn(args);
+}
+function mapOneOrManyArgs(fn) {
+  return map(function(args) {
+    return callOrApply(fn, args);
+  });
+}
 
 // node_modules/rxjs/dist/esm5/internal/util/argsArgArrayOrObject.js
 var isArray2 = Array.isArray;
+var getPrototypeOf = Object.getPrototypeOf;
 var objectProto = Object.prototype;
+var getKeys = Object.keys;
+function argsArgArrayOrObject(args) {
+  if (args.length === 1) {
+    var first_1 = args[0];
+    if (isArray2(first_1)) {
+      return {
+        args: first_1,
+        keys: null
+      };
+    }
+    if (isPOJO(first_1)) {
+      var keys = getKeys(first_1);
+      return {
+        args: keys.map(function(key) {
+          return first_1[key];
+        }),
+        keys
+      };
+    }
+  }
+  return {
+    args,
+    keys: null
+  };
+}
+function isPOJO(obj) {
+  return obj && typeof obj === "object" && getPrototypeOf(obj) === objectProto;
+}
+
+// node_modules/rxjs/dist/esm5/internal/util/createObject.js
+function createObject(keys, values) {
+  return keys.reduce(function(result, key, i) {
+    return result[key] = values[i], result;
+  }, {});
+}
 
 // node_modules/rxjs/dist/esm5/internal/operators/mergeInternals.js
 function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, expand2, innerSubScheduler, additionalFinalizer) {
@@ -2896,6 +2943,49 @@ function mergeMap(project, resultSelector, concurrent) {
   return operate(function(source, subscriber) {
     return mergeInternals(source, subscriber, project, concurrent);
   });
+}
+
+// node_modules/rxjs/dist/esm5/internal/observable/forkJoin.js
+function forkJoin() {
+  var args = [];
+  for (var _i = 0; _i < arguments.length; _i++) {
+    args[_i] = arguments[_i];
+  }
+  var resultSelector = popResultSelector(args);
+  var _a = argsArgArrayOrObject(args), sources = _a.args, keys = _a.keys;
+  var result = new Observable(function(subscriber) {
+    var length = sources.length;
+    if (!length) {
+      subscriber.complete();
+      return;
+    }
+    var values = new Array(length);
+    var remainingCompletions = length;
+    var remainingEmissions = length;
+    var _loop_1 = function(sourceIndex2) {
+      var hasValue = false;
+      innerFrom(sources[sourceIndex2]).subscribe(createOperatorSubscriber(subscriber, function(value) {
+        if (!hasValue) {
+          hasValue = true;
+          remainingEmissions--;
+        }
+        values[sourceIndex2] = value;
+      }, function() {
+        return remainingCompletions--;
+      }, void 0, function() {
+        if (!remainingCompletions || !hasValue) {
+          if (!remainingEmissions) {
+            subscriber.next(keys ? createObject(keys, values) : values);
+          }
+          subscriber.complete();
+        }
+      }));
+    };
+    for (var sourceIndex = 0; sourceIndex < length; sourceIndex++) {
+      _loop_1(sourceIndex);
+    }
+  });
+  return resultSelector ? result.pipe(mapOneOrManyArgs(resultSelector)) : result;
 }
 
 // node_modules/rxjs/dist/esm5/internal/observable/never.js
@@ -26619,9 +26709,11 @@ export {
   __objRest,
   __async,
   Observable,
+  Subject,
   from,
   of,
   map,
+  forkJoin,
   filter,
   concatMap,
   finalize,
@@ -27142,4 +27234,4 @@ export {
    * found in the LICENSE file at https://angular.io/license
    *)
 */
-//# sourceMappingURL=chunk-UGAN4Z3Y.js.map
+//# sourceMappingURL=chunk-EDLLBF6K.js.map
