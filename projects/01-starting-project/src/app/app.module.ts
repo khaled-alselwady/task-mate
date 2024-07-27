@@ -7,8 +7,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CardComponent } from './shared/card/card.component';
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent],
+  declarations: [AppComponent, HeaderComponent, UserComponent, CardComponent],
   bootstrap: [AppComponent],
-  imports: [BrowserModule, UserComponent, TasksComponent, CardComponent],
+  imports: [BrowserModule, TasksComponent],
 })
 export class AppModule {}
