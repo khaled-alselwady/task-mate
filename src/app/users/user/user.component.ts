@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 import { type User } from './user.model';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -12,6 +12,5 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class UserComponent {
   user = input.required<User>();
-
   imagePath = computed(() => 'users/' + this.user().avatar);
 }
