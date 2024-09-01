@@ -1,16 +1,8 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  input,
-  Input,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { UsersService } from '../users.service';
 import { User } from '../user/user.model';
-import { map } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-tasks',
@@ -19,23 +11,39 @@ import { map } from 'rxjs';
   styleUrls: ['./user-tasks.component.css'],
 })
 export class UserTasksComponent implements OnInit {
-  userId = input.required<string>();
+  private activatedRoute = inject(ActivatedRoute);
   users = signal<User[]>([]);
   private usersService = inject(UsersService);
   private destroyRef = inject(DestroyRef);
+  username = '';
 
-  username = computed(
-    () =>
-      this.users().find((user) => user.id === parseFloat(this.userId()))?.name
-  );
-
-  ngOnInit() {
-    const subscription = this.usersService.loadUsers().subscribe({
-      next: (users) => {
-        this.users.set(users);
+  private updateUsername() {
+    const subscription = this.activatedRoute.paramMap.subscribe({
+      next: (paramMap) => {
+        this.username =
+          this.users().find(
+            (u) => u.id === parseFloat(paramMap.get('userId') || '0')
+          )?.name || '';
       },
     });
 
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  }
+
+  private updateUsers() {
+    const subscription = this.usersService
+      .loadUsers()
+      .pipe(map((res) => res as User[]))
+      .subscribe({
+        next: (users) => this.users.set(users),
+        complete: () => this.updateUsername(),
+      });
+
+    // Clean up the subscription on component destroy
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  }
+
+  ngOnInit() {
+    this.updateUsers();
   }
 }
