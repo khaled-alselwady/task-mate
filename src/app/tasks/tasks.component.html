@@ -1,9 +1,9 @@
 <ul>
   @for (task of userTasks; track task.id) {
-    <li>
-      <app-task [task]="task" />
-    </li>
+  <li>
+    <app-task [task]="task" />
+  </li>
   } @empty {
-    <p>There are no tasks yet. Start adding some!</p>
+  <p>There are no tasks yet. Start adding some!</p>
   }
 </ul>
