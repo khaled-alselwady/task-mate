@@ -2,13 +2,14 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { UsersService } from '../users.service';
 import { User } from '../user/user.model';
 import { map } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-user-tasks',
   standalone: true,
   templateUrl: './user-tasks.component.html',
   styleUrls: ['./user-tasks.component.css'],
+  imports: [RouterOutlet],
 })
 export class UserTasksComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
