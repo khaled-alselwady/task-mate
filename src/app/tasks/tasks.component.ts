@@ -1,16 +1,22 @@
 import {
   Component,
+  computed,
   DestroyRef,
+  DoCheck,
   inject,
   input,
+  OnChanges,
   OnDestroy,
   OnInit,
   signal,
+  SimpleChanges,
 } from '@angular/core';
 
 import { TaskComponent } from './task/task.component';
 import { Task } from './task/task.model';
 import { ActivatedRoute } from '@angular/router';
+import { TasksService } from './tasks.service';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-tasks',
@@ -19,19 +25,29 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './tasks.component.css',
   imports: [TaskComponent],
 })
-export class TasksComponent implements OnInit {
+export class TasksComponent implements OnChanges {
   userId = input.required<string>();
-  //userId = signal('');
-  userTasks: Task[] = [];
-  //private activatedRoute = inject(ActivatedRoute);
+  userTasks = signal<Task[]>([]);
   private destroyRef = inject(DestroyRef);
+  private tasksService = inject(TasksService);
 
-  ngOnInit() {
-    // const subscription = this.activatedRoute.paramMap.subscribe({
-    //   next: (paramMap) => {
-    //     this.userId.set(paramMap.get('userId') || '');
-    //   },
-    // });
-    // this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  ngOnChanges(): void {
+    this.fetchUserTasks();
+  }
+
+  private fetchUserTasks() {
+    const userId = parseFloat(this.userId());
+    const subscription = this.tasksService.loadUserTasks(userId).subscribe({
+      next: (userTasks) => {
+        this.userTasks.set(userTasks);
+        this.updateUserTasks(userTasks);
+      },
+    });
+
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  }
+
+  updateUserTasks(userTasks: Task[]) {
+    this.userTasks.set(userTasks);
   }
 }
