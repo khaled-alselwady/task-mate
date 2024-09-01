@@ -2,6 +2,7 @@ import { inject, Injectable, OnInit, signal } from '@angular/core';
 
 import { Task, type NewTaskData } from './task/task.model';
 import { HttpClient } from '@angular/common/http';
+import { pipe, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class TasksService implements OnInit {
@@ -35,8 +36,7 @@ export class TasksService implements OnInit {
   }
 
   addTask(taskData: NewTaskData) {
-    this.httpClient.post(`${this.baseUrl}`, taskData);
-    this.saveTasks();
+    return this.httpClient.post<Task[]>(`${this.baseUrl}`, taskData);
   }
 
   removeTask(id: string) {

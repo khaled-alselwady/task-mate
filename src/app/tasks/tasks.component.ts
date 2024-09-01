@@ -1,22 +1,14 @@
 import {
   Component,
-  computed,
   DestroyRef,
-  DoCheck,
   inject,
   input,
   OnChanges,
-  OnDestroy,
-  OnInit,
   signal,
-  SimpleChanges,
 } from '@angular/core';
-
 import { TaskComponent } from './task/task.component';
 import { Task } from './task/task.model';
-import { ActivatedRoute } from '@angular/router';
 import { TasksService } from './tasks.service';
-import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-tasks',
@@ -36,18 +28,14 @@ export class TasksComponent implements OnChanges {
   }
 
   private fetchUserTasks() {
-    const userId = parseFloat(this.userId());
-    const subscription = this.tasksService.loadUserTasks(userId).subscribe({
-      next: (userTasks) => {
-        this.userTasks.set(userTasks);
-        this.updateUserTasks(userTasks);
-      },
-    });
+    const subscription = this.tasksService
+      .loadUserTasks(+this.userId())
+      .subscribe({
+        next: (userTasks) => {
+          this.userTasks.set(userTasks);
+        },
+      });
 
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
-  }
-
-  updateUserTasks(userTasks: Task[]) {
-    this.userTasks.set(userTasks);
   }
 }
