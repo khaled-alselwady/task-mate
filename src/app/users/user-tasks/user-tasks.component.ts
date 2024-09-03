@@ -1,8 +1,15 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, input, Input } from '@angular/core';
 import { UsersService } from '../users.service';
 import { User } from '../user/user.model';
 import { map } from 'rxjs/operators';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  ResolveFn,
+  RouterLink,
+  RouterOutlet,
+  RouterStateSnapshot,
+} from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-user-tasks',
@@ -11,40 +18,27 @@ import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
   styleUrls: ['./user-tasks.component.css'],
   imports: [RouterOutlet, RouterLink],
 })
-export class UserTasksComponent implements OnInit {
-  private activatedRoute = inject(ActivatedRoute);
-  users = signal<User[]>([]);
-  private usersService = inject(UsersService);
-  private destroyRef = inject(DestroyRef);
-  username = '';
-
-  private updateUsername() {
-    const subscription = this.activatedRoute.paramMap.subscribe({
-      next: (paramMap) => {
-        this.username =
-          this.users().find(
-            (u) => u.id === parseFloat(paramMap.get('userId') || '0')
-          )?.name || '';
-      },
-    });
-
-    this.destroyRef.onDestroy(() => subscription.unsubscribe());
-  }
-
-  private updateUsers() {
-    const subscription = this.usersService
-      .loadUsers()
-      .pipe(map((res) => res as User[]))
-      .subscribe({
-        next: (users) => this.users.set(users),
-        complete: () => this.updateUsername(),
-      });
-
-    // Clean up the subscription on component destroy
-    this.destroyRef.onDestroy(() => subscription.unsubscribe());
-  }
-
-  ngOnInit() {
-    this.updateUsers();
-  }
+export class UserTasksComponent {
+  @Input() message: string = '';
+  username = input.required<string>();
 }
+
+// Resolver function
+export const resolveUsername: ResolveFn<Promise<string>> = async (
+  activatedRoute: ActivatedRouteSnapshot,
+  routerState: RouterStateSnapshot
+): Promise<string> => {
+  const usersService = inject(UsersService);
+
+  // Await the data to be fetched before returning
+  const users = await firstValueFrom(
+    usersService.loadUsers().pipe(map((res) => res as User[]))
+  );
+
+  // Find the username
+  const username =
+    users.find((u) => u.id === +(activatedRoute.paramMap.get('userId') || '0'))
+      ?.name || '';
+
+  return username;
+};
