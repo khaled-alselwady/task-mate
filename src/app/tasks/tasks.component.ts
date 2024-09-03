@@ -23,20 +23,34 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 export class TasksComponent implements OnChanges, OnInit {
   userId = input.required<string>();
   //order = input<'asc' | 'desc'>();
-  order = signal<'asc' | 'desc' | undefined>(undefined);
-  userTasks = signal<Task[]>([]);
+  order = signal<'asc' | 'desc'>('asc');
   private destroyRef = inject(DestroyRef);
   private tasksService = inject(TasksService);
   private activatedRoute = inject(ActivatedRoute);
 
+  userTasks = signal<Task[]>([]);
+
   private destroyedSubscription(subscription: any) {
     this.destroyRef.onDestroy(() => subscription.unsubscribe());
+  }
+
+  private sortUserTasks() {
+    this.userTasks.update((oldTasks) =>
+      oldTasks.sort((a, b) => {
+        if (this.order() === 'asc') {
+          return a.id > b.id ? 1 : -1;
+        } else {
+          return a.id > b.id ? -1 : 1;
+        }
+      })
+    );
   }
 
   ngOnInit(): void {
     const subscription = this.activatedRoute.queryParams.subscribe({
       next: (params) => {
         this.order.set(params['order']);
+        this.sortUserTasks();
       },
     });
 

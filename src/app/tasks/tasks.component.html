@@ -2,9 +2,9 @@
   <a
     [style.display]="userTasks().length == 0 ? 'none' : 'block'"
     routerLink="./"
-    [queryParams]="{ order: order() === 'asc' ? 'desc' : 'asc' }"
+    [queryParams]="{ order: order() === 'desc' ? 'asc' : 'desc' }"
   >
-    Sort {{ order() === "asc" ? "Descending" : "Ascending" }}
+    Sort {{ order() === "desc" ? "Ascending" : "Descending" }}
   </a>
 </p>
 
