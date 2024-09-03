@@ -1,3 +1,9 @@
+<p>
+  <a routerLink="./" [queryParams]="{ order: 'asc' }">
+    Sort Ascending or Descending
+  </a>
+</p>
+
 <ul>
   @for (task of userTasks(); track task.id) {
   <li>
