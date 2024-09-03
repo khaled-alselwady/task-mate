@@ -20,6 +20,7 @@ import { RouterLink } from '@angular/router';
 })
 export class TasksComponent implements OnChanges {
   userId = input.required<string>();
+  order = input<'asc' | 'desc'>();
   userTasks = signal<Task[]>([]);
   private destroyRef = inject(DestroyRef);
   private tasksService = inject(TasksService);
