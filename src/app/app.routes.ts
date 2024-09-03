@@ -9,11 +9,18 @@ export const routes: Routes = [
   {
     path: '', // <baseUrl>/
     component: NoTaskComponent,
+    // redirectTo: '/users/1',
+    // pathMatch: 'full', // redirect to /users/2 if no other path matches
   },
   {
     path: 'users/:userId', // <baseUrl>/users/<userId>
     component: UserTasksComponent,
     children: [
+      {
+        path: '', // <baseUrl>/users/<userId>
+        redirectTo: 'tasks',
+        pathMatch: 'full', // redirect to /users/<userId>/tasks if no other path matches
+      },
       {
         path: 'tasks', // <baseUrl>/users/<userId>/tasks
         component: TasksComponent,
