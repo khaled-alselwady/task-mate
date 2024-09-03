@@ -5,6 +5,7 @@ import {
   input,
   OnChanges,
   signal,
+  SimpleChanges,
 } from '@angular/core';
 import { TaskComponent } from './task/task.component';
 import { Task } from './task/task.model';
@@ -25,8 +26,11 @@ export class TasksComponent implements OnChanges {
   private destroyRef = inject(DestroyRef);
   private tasksService = inject(TasksService);
 
-  ngOnChanges(): void {
-    this.fetchUserTasks();
+  ngOnChanges(changes: SimpleChanges): void {
+    // Check if 'userId' has changed
+    if (changes['userId']) {
+      this.fetchUserTasks();
+    }
   }
 
   private fetchUserTasks() {
