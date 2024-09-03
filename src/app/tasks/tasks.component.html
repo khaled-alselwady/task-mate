@@ -1,5 +1,6 @@
 <p>
   <a
+    [style.display]="userTasks().length == 0 ? 'none' : 'block'"
     routerLink="./"
     [queryParams]="{ order: order() === 'asc' ? 'desc' : 'asc' }"
   >
