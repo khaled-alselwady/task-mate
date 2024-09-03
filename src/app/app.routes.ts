@@ -24,4 +24,8 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: '**', // catch-all for 404
+    component: NotFoundComponent,
+  },
 ];
