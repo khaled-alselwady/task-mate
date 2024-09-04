@@ -29,15 +29,15 @@ To get started with this repository:
    
    This command will compile the application and open it in your default web browser. If it doesn't open automatically, you can navigate to http://localhost:4200/ in your browser.
 
-<!--## Screenshots
+## Screenshots
 
 Here are some screenshots of the application:
 
 ### Main Interface
-![Main Interface](task-mate/src/assets/screenshots/main.png)
+![Main Interface](public/screenshots/tasks-list.png)
 
 ### Add Task Dialog
-![Add Task Dialog](task-mate/src/assets/screenshots/add-new-task.png)-->
+![Add Task Dialog](public/screenshots/add-new-task.png)
 
 ## Usage
 
