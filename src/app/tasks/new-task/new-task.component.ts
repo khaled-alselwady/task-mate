@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { TasksService } from '../tasks.service';
 import { NewTaskData } from '../task/task.model';
-import { Router, RouterLink } from '@angular/router';
+import { CanDeactivateFn, Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-new-task',
@@ -17,6 +17,7 @@ export class NewTaskComponent {
   enteredTitle = signal('');
   enteredSummary = signal('');
   enteredDate = signal('');
+  submitted = false;
   private tasksService = inject(TasksService);
   private router = inject(Router);
 
@@ -27,6 +28,8 @@ export class NewTaskComponent {
   }
 
   onSubmit() {
+    this.submitted = true;
+
     const taskData: NewTaskData = {
       userId: +this.userId(),
       title: this.enteredTitle(),
@@ -40,3 +43,20 @@ export class NewTaskComponent {
     });
   }
 }
+
+export const canLeaveEditPage: CanDeactivateFn<NewTaskComponent> = (
+  component
+) => {
+  if (component.submitted) {
+    return true;
+  }
+
+  if (
+    component.enteredDate() ||
+    component.enteredSummary() ||
+    component.enteredTitle()
+  ) {
+    return window.confirm('Are you sure you want to discard changes?');
+  }
+  return true;
+};
