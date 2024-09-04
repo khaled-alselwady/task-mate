@@ -13,6 +13,7 @@ export const routes: Routes = [
     component: NoTaskComponent,
     // redirectTo: '/users/1',
     // pathMatch: 'full', // redirect to /users/2 if no other path matches
+    title: 'No Task Selected',
   },
   {
     path: 'users/:userId', // <baseUrl>/users/<userId>
@@ -28,5 +29,6 @@ export const routes: Routes = [
   {
     path: '**', // catch-all for 404
     component: NotFoundComponent,
+    title: 'Page Not Found',
   },
 ];

@@ -10,6 +10,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { UserResolverService } from '../user/user-resolver.service';
 
 @Component({
   selector: 'app-user-tasks',
@@ -24,21 +25,22 @@ export class UserTasksComponent {
 }
 
 // Resolver function
-export const resolveUsername: ResolveFn<Promise<string>> = async (
+export const resolveUsername: ResolveFn<string> = async (
   activatedRoute: ActivatedRouteSnapshot,
   routerState: RouterStateSnapshot
-): Promise<string> => {
-  const usersService = inject(UsersService);
+) => {
+  const userResolveService = inject(UserResolverService);
+  const userId = +(activatedRoute.paramMap.get('userId') || '0');
 
-  // Await the data to be fetched before returning
-  const users = await firstValueFrom(
-    usersService.loadUsers().pipe(map((res) => res as User[]))
-  );
-
-  // Find the username
-  const username =
-    users.find((u) => u.id === +(activatedRoute.paramMap.get('userId') || '0'))
-      ?.name || '';
+  const username = userResolveService.fetchUsername(userId);
 
   return username;
+};
+
+export const resolveTitle: ResolveFn<string> = async (
+  activatedRoute: ActivatedRouteSnapshot,
+  routerState: RouterStateSnapshot
+) => {
+  const username = await resolveUsername(activatedRoute, routerState);
+  return `${username}'s Tasks`;
 };
