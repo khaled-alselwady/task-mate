@@ -3,7 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Task, type NewTaskData } from './task/task.model';
 import { HttpClient } from '@angular/common/http';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class TasksService {
   private httpClient = inject(HttpClient);
   private tasks = signal<Task[]>([]);
